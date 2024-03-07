@@ -1,118 +1,84 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
-
 import React from 'react';
-import type {PropsWithChildren} from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from 'react-native';
+import {NavigationContainer, useNavigation} from '@react-navigation/native';
+import {createStackNavigator} from '@react-navigation/stack';
+import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+const Stack = createStackNavigator();
 
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
+const styles = StyleSheet.create({
+  screenContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'blue',
+  },
+  text: {
+    fontSize: 30,
+  },
+  button: {
+    width: 200,
+    height: 100,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  buttonContainer: {
+    flexWrap: 'wrap',
+  },
+});
 
-function Section({children, title}: SectionProps): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
+const Screen = ({route}) => {
+  const {id} = route.params;
   return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
+    <View style={[styles.screenContainer]}>
+      <Text style={styles.text}>SCREEN {id}</Text>
+    </View>
+  );
+};
+
+export function SimpleTab({children, onPress}) {
+  return (
+    <TouchableOpacity
+      activeOpacity={0.5}
+      onPress={onPress}
+      style={{padding: 10}}>
+      <Text style={{fontSize: 30, color: 'white'}}>{children}</Text>
+    </TouchableOpacity>
+  );
+}
+
+const ROUTES = ['Screen0', 'Screen1', 'Screen2', 'Screen3'];
+
+function Menu() {
+  const navigation = useNavigation();
+  return (
+    <View style={{backgroundColor: 'green', flexDirection: 'row'}}>
+      {ROUTES.map((route, id) => (
+        <SimpleTab
+          key={route}
+          onPress={() => {
+            navigation.navigate(route, {id});
+          }}>
+          {route}
+        </SimpleTab>
+      ))}
     </View>
   );
 }
 
-function App(): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
-
-  return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
-    </SafeAreaView>
-  );
-}
-
-const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-});
+const App = () => (
+  <NavigationContainer>
+    <Stack.Navigator
+      initialRouteName="Screen0"
+      screenOptions={{
+        headerMode: 'float',
+        header: () => <Menu />,
+      }}>
+      <Stack.Screen name="Screen0" component={Screen} initialParams={{id: 0}} />
+      <Stack.Screen name="Screen1" component={Screen} />
+      <Stack.Screen name="Screen2" component={Screen} />
+      <Stack.Screen name="Screen3" component={Screen} />
+    </Stack.Navigator>
+  </NavigationContainer>
+);
 
 export default App;
